@@ -1,0 +1,12 @@
+altair==4.2.0
+joblib==1.2.0
+matplotlib==3.7.1
+numpy==1.23.0
+pandas==1.4.4
+plotly==5.10.0
+pystan==2.19.1.1
+scikit_learn==1.2.2
+seaborn==0.11.2
+stqdm==0.0.5
+streamlit==1.13.0
+tqdm==4.64.0
