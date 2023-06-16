@@ -10,6 +10,7 @@ from tqdm import tqdm
 import stqdm
 import time
 import threading
+
 try:
     multiprocessing.set_start_method("fork")
 except:
@@ -17,25 +18,39 @@ except:
 # Define the Streamlit app
 st.set_page_config(layout="wide")
 
+st.error("The information in this site is intended solely for the Demo purposes. While we have taken every precaution to ensure that the result is reasonably accurate, errors can occur. This should not be considered as a fully developed production level system with a high degree of accuracy, as training and tuning has been limited for the intended demo purpose.")
+st.markdown("---")
 def main():
-
     st.markdown("<h1 style='text-align: center;'>Marketing Mix Model</h1>", unsafe_allow_html=True)
-    #st.title("Marketing Mix Model")
     
+    # Sample Dataframes
+    sample_dataframes = {
+        "None":None,
+        "Sample Dataframe 1":""
+    }
+    
+    # Selectbox to choose a sample dataframe
+    selected_dataframe = st.selectbox("Choose a Sample Dataframe", list(sample_dataframes.keys()))
+
+   
+
     # Allow the user to upload a CSV file
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-    info =st.info('Uploaded data should contain Date, impressions , spending of various channels', icon="ℹ️")
+    uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
+    info = st.info("Uploaded data should contain Date, impressions, and spending of various channels")
 
-    consts={}
-    sep=0
+    consts = {}
+    sep = 0
 
-    col1, col2,col3 = st.columns(3)
-
-    if uploaded_file is not None:
+    col1, col2, col3 = st.columns(3)
+    df=None
+    if uploaded_file :
         info.empty()
-        # Read the CSV file into a pandas DataFrame
-        df=pd.DataFrame()
         df = pd.read_csv(uploaded_file)
+
+    elif selected_dataframe!="None":
+        df = pd.read_csv("data_2.csv")
+
+    if df is not None:
         st.write(df.head(3))
         with col1:
             no_of_weeks =  st.number_input("Enter the number of past weeks' data you want to be used for calculations :", max_value=len(df), min_value=1, value=52 )
@@ -45,21 +60,29 @@ def main():
             const = st.number_input('Enter the constraints (± percent change in budget share while optimising:)',
                                 min_value=1, max_value=100, value=10)
 
-        
         def display_number_inputs(cols):
-            columns = st.columns(len(cols))
+            num_columns = 5
+            total_cols = len(cols)
+            num_rows = (total_cols + num_columns - 1) // num_columns
 
-            for i, col in enumerate(cols):
-                with columns[i]:
-                    value = const
-                    consts[col] = st.number_input(f"Enter constraints for {col}", value=value)
-            print(consts)
-        # Create a checkbox with a label
-        if st.checkbox("Select indivisual constraints for each channel"):
+            for row in range(num_rows):
+                row_cols = cols[row*num_columns : (row+1)*num_columns]
+                columns = st.columns(len(row_cols))
+
+                for i, col in enumerate(row_cols):
+                    with columns[i]:
+                        value = const
+                        consts[col] = st.number_input(f"Enter constraints for {col}", value=value)
+
+
+                        # Rest of your code...
+
+        if st.checkbox("Select individual constraints for each channel"):
             # Change the constraints for the columns
             sep = 1
-            cols =[i.split('_')[1] for i in df.columns if 'mdip_' in i]
+            cols = [i.split('_')[1] for i in df.columns if 'mdip_' in i]
             display_number_inputs(cols)
+
         
         show_sales = st.checkbox('Show sales')
 
@@ -69,8 +92,8 @@ def main():
                 x=alt.X('wk_strt_dt', axis=alt.Axis(labelAngle=45 ,tickCount=3,labelOverlap='greedy')),
                 y='sales'
             ).configure_axis(
-               # set font size for the axis title
-             )
+                # set font size for the axis title
+                )
             return chart
 
         # Show or hide the plot based on the checkbox
