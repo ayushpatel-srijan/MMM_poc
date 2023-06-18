@@ -7,7 +7,8 @@ RUN apt-get install git -y
 WORKDIR /app
 
 COPY requirements.txt .
-
+RUN apt-get install build-essential
+RUN pip install --upgrade setuptools wheel
 RUN pip install -r requirements.txt
 RUN pip install git+https://github.com/stan-dev/pystan2.git@master
 
