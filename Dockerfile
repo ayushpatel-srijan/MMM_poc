@@ -4,12 +4,12 @@ RUN apt-get update
 RUN python -m pip install --upgrade pip
 RUN apt-get install git -y
 
-RUN pip install git+https://github.com/stan-dev/pystan2.git@master
 WORKDIR /app
 
 COPY requirements.txt .
 
 RUN pip install -r requirements.txt
+RUN pip install git+https://github.com/stan-dev/pystan2.git@master
 
 EXPOSE 8502
 
