@@ -2,7 +2,7 @@ FROM python:3.9-slim-buster
 
 RUN apt-get update
 RUN python -m pip install --upgrade pip
-RUN apt-get install git
+RUN apt-get install git -y
 
 RUN pip install git+https://github.com/stan-dev/pystan2.git@master
 WORKDIR /app
